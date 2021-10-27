@@ -18,8 +18,17 @@ class ViewController: UIViewController {
     @IBOutlet weak var textField: UITextField!
     
     // 8-битное число без знака
-    var number: UInt8 = 128 {
+    var number = 128 {
+
         didSet{
+            /*
+            if number < 0 {
+                number = 255
+            } else if number > 255 {
+                number = 0
+            }*/
+            
+            number = (number + 256) % 256
             updateUI()
         }
     }
@@ -47,7 +56,8 @@ class ViewController: UIViewController {
         for `switch` in switches {
             number += `switch`.isOn ? `switch`.tag : 0
         }
-        self.number = UInt8(number % 256)
+        //self.number = UInt8(number % 256)
+        self.number = number
     }
     
     
@@ -80,7 +90,7 @@ class ViewController: UIViewController {
     // actions
     @IBAction func buttonPressed() {
         print(#line, #function)
-        number = UInt8((Int(number) + 1) % 256)
+        number = number + 1
     }
     
     @IBAction func switchToggled(_ sender: UISwitch) {
@@ -90,7 +100,7 @@ class ViewController: UIViewController {
     
     @IBAction func sliderMoved() {
         print(#line, #function)
-        number = UInt8(slider.value)
+        number = Int(slider.value)
     }
     
     @IBAction func textFieldEdited() {
@@ -99,8 +109,19 @@ class ViewController: UIViewController {
             number = 0
             textField.text = "0"
         }
-        number = UInt8(textField.text ?? "") ?? 128
+        number = Int(textField.text ?? "") ?? 128
     }
     
+    
+    // TapGestureRecognizer
+    @IBAction func screenTapped(_ sender: UITapGestureRecognizer) {
+        let location = sender.location(in: view)
+        if location.x < view.bounds.midX {
+            number -= 1
+        } else {
+            number += 1
+        }
+        print(#line, #function, sender.location(in: view))
+    }
 }
 
